@@ -18,8 +18,7 @@ public class Professor extends Cliente {
 
     @Override
     public Ticket calculaCusto(Ticket ticket, LocalDateTime horaSaida) {
-        // Professores não pagam (é isento para o veículo que entrar como professor)
-        // A regra de cobrar o 2º carro como avulso será tratada pelo controle de entrada do estacionamento
+        
         ticket.setHoraSaida(horaSaida);
         ticket.setValorCalculado(0.0);
         ticket.setDesconto(0.0);
