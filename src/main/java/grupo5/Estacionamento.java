@@ -14,11 +14,13 @@ public class Estacionamento {
     private HashMap<String, Ticket> ticketsAtivos;
     private List<Ticket> ticketsEncerrados;
     private HashSet<String> placasBloqueadas;
+    private CadastroCliente cadastroCliente;
 
-    public Estacionamento() {
-        ticketsAtivos = new HashMap<>();
-        ticketsEncerrados = new ArrayList<>();
-        placasBloqueadas = new HashSet<>();
+    public Estacionamento(CadastroCliente cadastroCliente) {
+        this.cadastroCliente = cadastroCliente;
+        this.ticketsAtivos = new HashMap<>();
+        this.ticketsEncerrados = new ArrayList<>();
+        this.placasBloqueadas = new HashSet<>();
     }
 
     public HashMap<String, Ticket> getTicketsAtivos() {
@@ -33,21 +35,88 @@ public class Estacionamento {
         return placasBloqueadas;
     }
 
-    /*
-     * public void entrada(String placa, LocalDateTime horaEntrada) {
-     * if (ticketsAtivos.size() >= MAX_VAGAS) {
-     * throw new IllegalStateException();
-     * }
-     * ticketsAtivos.put(placa, new Ticket(placa));
-     * }
-     */
+    public void entrada(String placa, LocalDateTime horaEntrada) {
+        if (!verificaPlaca(placa)) {
+            throw new IllegalArgumentException("Placa inválida.");
+        }
+        if (ticketsAtivos.size() >= MAX_VAGAS) {
+            throw new IllegalStateException("Estacionamento lotado.");
+        }
+        if (placasBloqueadas.contains(placa)) {
+            throw new IllegalStateException("Veículo bloqueado por falta de pagamento.");
+        }
 
-    public void saida(String placa, LocalDateTime horaSaida) {
+        Cliente cliente = null;
+        if (cadastroCliente != null && cadastroCliente.getPlacasClientes().containsKey(placa)) {
+            cliente = cadastroCliente.getPlacasClientes().get(placa);
+
+            if (cliente instanceof Empresa) {
+                if (((Empresa) cliente).isInadimplente()) {
+                    throw new IllegalStateException("Empresa inadimplente.");
+                }
+            } else if (cliente instanceof Estudante) {
+                if (((Estudante) cliente).getSaldo() < 0) {
+                    throw new IllegalStateException("Estudante com saldo negativo.");
+                }
+            } else if (cliente instanceof Professor) {
+                Cliente finalCliente = cliente;
+                boolean jaEstacionado = ticketsAtivos.values().stream()
+                        .anyMatch(t -> t.getCliente() == finalCliente);
+                if (jaEstacionado) {
+                    cliente = null; // trata como cliente avulso
+                }
+            }
+        }
+
+        ticketsAtivos.put(placa, new Ticket(placa, horaEntrada, cliente));
+    }
+
+    public Ticket calculaCustoSaida(String placa, LocalDateTime horaSaida) {
         if (!ticketsAtivos.containsKey(placa)) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Veículo não encontrado.");
         }
 
         Ticket ticket = ticketsAtivos.get(placa);
+        Cliente cliente = ticket.getCliente();
+
+        if (cliente != null) {
+            return cliente.calculaCusto(ticket, horaSaida);
+        } else {
+            int dias = quantidadeDiarias(ticket.getHoraEntrada(), horaSaida);
+            int horasPrimeiroDia = horasAteSaidaOuMeiaNoite(ticket.getHoraEntrada(), horaSaida);
+
+            double custoDia1 = (horasPrimeiroDia > 6) ? VALOR_DIARIA : Math.max(1, horasPrimeiroDia) * VALOR_HORA;
+            double custoTotal = custoDia1 + (dias * VALOR_DIARIA);
+
+            // desconto cliente frequente
+            boolean frequente = ticketsEncerrados.stream()
+                    .anyMatch(t -> t.getCliente() == null
+                            && t.getPlaca().equals(placa)
+                            && t.getHoraSaida() != null
+                            && t.getHoraSaida().isAfter(horaSaida.minusDays(3)));
+
+            double desconto = frequente ? custoTotal * 0.10 : 0.0;
+            double valorCobrado = custoTotal - desconto;
+
+            ticket.setHoraSaida(horaSaida);
+            ticket.setValorCalculado(custoTotal);
+            ticket.setDesconto(desconto);
+            ticket.setValorCobrado(valorCobrado);
+
+            return ticket;
+        }
+    }
+
+    public void saida(Ticket ticket, double valorPago) {
+        if (valorPago < ticket.getValorCobrado()) {
+            if (ticket.getCliente() == null) {
+                // avulso se recusa a pagar: libera saída, mas bloqueia placa
+                placasBloqueadas.add(ticket.getPlaca());
+            }
+        }
+
+        ticketsAtivos.remove(ticket.getPlaca());
+        ticketsEncerrados.add(ticket);
     }
 
     // Métodos static auxiliares
@@ -57,8 +126,6 @@ public class Estacionamento {
             return false;
         }
 
-        // Padrão de placa MERCOSUL: 3 letras + 1 dígito + 1 letra + 2 dígitos
-        // Exemplo: ABC1D23
         return placa.matches("[A-Z]{3}[0-9][A-Z][0-9]{2}");
     }
 
@@ -72,8 +139,6 @@ public class Estacionamento {
         };
     }
 
-    // Retorna a quantidade de dias entre duas datas
-    // Se as datas forem no mesmo dia, retorna 0
     public static int quantidadeDiarias(LocalDateTime entrada, LocalDateTime saida) {
         if (saida.isBefore(entrada)) {
             throw new IllegalArgumentException("Saída anterior à entrada");
@@ -82,8 +147,6 @@ public class Estacionamento {
 
     }
 
-    // Quantidade de horas entre o horário de entrada e o de saída
-    // ou a quantidade de horas até a meia noite se mudou data
     public static int horasAteSaidaOuMeiaNoite(LocalDateTime entrada, LocalDateTime saida) {
         if (saida.isBefore(entrada)) {
             throw new IllegalArgumentException("Saída anterior à entrada");
