@@ -26,6 +26,10 @@ public abstract class Cliente {
 
     public abstract void cadastraVeiculo(String placa);
 
+    public void removeVeiculo(String placa) {
+        placas_veiculos.remove(placa);
+    }
+
     public abstract Ticket calculaCusto(Ticket ticket, LocalDateTime horaSaida);
 
 }

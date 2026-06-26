@@ -10,12 +10,22 @@ public class Professor extends Cliente {
 
     @Override
     public void cadastraVeiculo(String placa) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (getPlacas().size() >= 2) {
+            throw new SetFullException();
+        }
+        getPlacas().add(placa);
     }
 
     @Override
     public Ticket calculaCusto(Ticket ticket, LocalDateTime horaSaida) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // Professores não pagam (é isento para o veículo que entrar como professor)
+        // A regra de cobrar o 2º carro como avulso será tratada pelo controle de entrada do estacionamento
+        ticket.setHoraSaida(horaSaida);
+        ticket.setValorCalculado(0.0);
+        ticket.setDesconto(0.0);
+        ticket.setValorCobrado(0.0);
+        
+        return ticket;
     }
 
 }

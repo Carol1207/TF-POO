@@ -16,9 +16,23 @@ public class Empresa extends Cliente {
     }
 
     public static final double MULTA = 20.0;
+    private boolean inadimplente;
 
     public void adicionaDebito(int valor) {
         this.debitos += valor;
+    }
+
+    public boolean isInadimplente() {
+        return inadimplente;
+    }
+
+    public void setInadimplente(boolean inadimplente) {
+        this.inadimplente = inadimplente;
+    }
+
+    public void pagarBoleto() {
+        this.debitos = 0;
+        this.inadimplente = false;
     }
 
     @Override
@@ -36,7 +50,6 @@ public class Empresa extends Cliente {
         ticket.setDesconto(0.0);
         ticket.setValorCobrado(custo);
 
-        // Os débitos são acumulados no cadastro da empresa
         this.debitos += custo;
 
         return ticket;
