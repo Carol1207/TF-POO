@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Professor extends Cliente {
 
-    public Professor (String CPF_CNPJ, String nome, String celular) {
+    public Professor(String CPF_CNPJ, String nome, String celular) {
         super(CPF_CNPJ, nome, celular, 2);
     }
 
@@ -18,13 +18,12 @@ public class Professor extends Cliente {
 
     @Override
     public Ticket calculaCusto(Ticket ticket, LocalDateTime horaSaida) {
-        // Professores não pagam (é isento para o veículo que entrar como professor)
-        // A regra de cobrar o 2º carro como avulso será tratada pelo controle de entrada do estacionamento
+
         ticket.setHoraSaida(horaSaida);
         ticket.setValorCalculado(0.0);
         ticket.setDesconto(0.0);
         ticket.setValorCobrado(0.0);
-        
+
         return ticket;
     }
 
