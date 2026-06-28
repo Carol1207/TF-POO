@@ -2,7 +2,6 @@ package grupo5;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -93,6 +92,11 @@ public class Relatorios {
         public ClientesImpedidos(List<String> placasBloqueadasAvulsas, List<Empresa> empresasInadimplentes) {
             this.placasBloqueadasAvulsas = placasBloqueadasAvulsas;
             this.empresasInadimplentes = empresasInadimplentes;
+        }
+
+        public List<String> getPlacasBloqueadasAvulsas() {
+            // TODO Auto-generated method stub
+            return placasBloqueadasAvulsas;
         }
     }
 

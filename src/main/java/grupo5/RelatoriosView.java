@@ -1,6 +1,7 @@
 package grupo5;
 
-import grupo5.*;
+import java.time.LocalDateTime;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
@@ -12,7 +13,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.time.LocalDateTime;
+
+import grupo5.Relatorios.ClientesImpedidos;
 
 @PageTitle("Relatórios | Estacionamento")
 @Route(value = "relatorios", layout = MainLayout.class)
@@ -41,7 +43,7 @@ public class RelatoriosView extends VerticalLayout {
         });
 
         HorizontalLayout filtroFaturamento = new HorizontalLayout(dataInicio, dataFim, comboCategoria, btnCalcular);
-        filtroFaturamento.setVerticalComponentAlignment(Alignment.BOTTOM, btnCalcular);
+        filtroFaturamento.setVerticalComponentAlignment(Alignment.AUTO, btnCalcular);
         
         txtFaturamento.getStyle().set("font-weight", "bold").set("font-size", "1.2em");
 
