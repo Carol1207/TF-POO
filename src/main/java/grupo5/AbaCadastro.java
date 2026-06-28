@@ -37,7 +37,7 @@ public class AbaCadastro extends VerticalLayout {
         campoCpfCnpj = new TextField("CPF / CNPJ");
         campoNome = new TextField("Nome / Razão Social");
         campoCelular = new TextField("Celular");
-        
+
         campoValorExtra = new NumberField("Saldo Inicial (R$)");
         campoValorExtra.setValue(0.0);
 
@@ -45,7 +45,7 @@ public class AbaCadastro extends VerticalLayout {
         campoPlacas.setPlaceholder("Ex: ABC1A23, XYZ9B87");
         campoPlacas.setWidth("300px");
 
-        // Altera o label do valor extra dependendo do tipo de cliente selecionado
+        // altera o label do valor extra dependendo do tipo de cliente
         comboTipo.addValueChangeListener(e -> {
             String tipo = e.getValue();
             if ("Professor".equals(tipo)) {
@@ -77,7 +77,9 @@ public class AbaCadastro extends VerticalLayout {
             String cpfCnpj = campoCpfCnpj.getValue().trim();
             String nome = campoNome.getValue().trim();
             String celular = campoCelular.getValue().trim();
-            double valorExtra = campoValorExtra.isVisible() && campoValorExtra.getValue() != null ? campoValorExtra.getValue() : 0.0;
+            double valorExtra = campoValorExtra.isVisible() && campoValorExtra.getValue() != null
+                    ? campoValorExtra.getValue()
+                    : 0.0;
             String placasText = campoPlacas.getValue().trim();
 
             if (cpfCnpj.isEmpty() || nome.isEmpty()) {
@@ -85,7 +87,6 @@ public class AbaCadastro extends VerticalLayout {
                 return;
             }
 
-            // Verifica se cliente já existe
             CadastroCliente cadastro = servico.getCadastroCliente();
             if (cadastro.getClientes().containsKey(cpfCnpj)) {
                 mostrarErro("Já existe um cliente cadastrado com este CPF/CNPJ.");

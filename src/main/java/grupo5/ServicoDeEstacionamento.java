@@ -23,13 +23,11 @@ public class ServicoDeEstacionamento {
     @PostConstruct
     public void init() {
         try {
-            // Carrega os clientes
             Map<String, Cliente> clientes = PersistenciaClientes.carregarClientes();
             if (clientes != null) {
                 cadastroCliente.setClientes(clientes);
             }
 
-            // Carrega o histórico de tickets (encerrados)
             List<Ticket> tickets = PersistenciaTickets.carregarTickets("encerrados.dat", clientes);
             if (tickets != null) {
                 estacionamento.setTicketsEncerrados(tickets);
@@ -43,10 +41,7 @@ public class ServicoDeEstacionamento {
     @PreDestroy
     public void destroy() {
         try {
-            // Salva os clientes
             PersistenciaClientes.armazenarClientes(cadastroCliente.getClientes());
-
-            // Salva o histórico de tickets (encerrados)
             PersistenciaTickets.armazenarTickets(estacionamento.getTicketsEncerrados(), "encerrados.dat");
             System.out.println("Dados de estacionamento salvos");
         } catch (Exception e) {

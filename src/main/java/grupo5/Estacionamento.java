@@ -123,7 +123,7 @@ public class Estacionamento {
         ticketsEncerrados.add(ticket);
     }
 
-    // Métodos static auxiliares
+    // métodos static auxiliares
 
     public static boolean verificaPlaca(String placa) {
         if (placa == null) {

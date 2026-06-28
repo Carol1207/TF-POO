@@ -53,8 +53,8 @@ public class PersistenciaTickets {
         List<Ticket> tickets = new ArrayList<>();
 
         try (var linhas = Files.lines(Path.of(nomeArquivo), StandardCharset.UTF_8)) {
-            linhas.map(String::trim) // Remove brancos no início e fim da linha
-                    .filter(l -> !l.isEmpty()) // Ignora as linhas em branco
+            linhas.map(String::trim)
+                    .filter(l -> !l.isEmpty())
                     .forEach(l -> {
                         String[] partes = l.split(",");
                         String placa = partes[0];

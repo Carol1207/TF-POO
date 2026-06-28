@@ -39,8 +39,7 @@ public class AbaRelatorios extends VerticalLayout {
                 "3. Registros de Cliente Cadastrado",
                 "4. Registros de Veículos Avulsos",
                 "5. Lista de Clientes Impedidos",
-                "6. Top 10 Clientes Mais Frequentes"
-        );
+                "6. Top 10 Clientes Mais Frequentes");
         comboRelatorios.setWidth("400px");
         comboRelatorios.setValue("1. Valor Total Arrecadado");
 
@@ -76,14 +75,14 @@ public class AbaRelatorios extends VerticalLayout {
         LocalDateTime fim = dataFim.getValue() != null ? dataFim.getValue().atTime(23, 59, 59) : LocalDateTime.MAX;
         String cpfCnpj = campoFiltroCpf.getValue().trim();
 
-        if (opcao == null) return;
+        if (opcao == null)
+            return;
 
         try {
             if (opcao.startsWith("1")) {
                 double total = relatorios.getValorArrecadado(inicio, fim, null);
                 sb.append(String.format("Valor Total Arrecadado no período: R$ %.2f\n", total));
-            } 
-            else if (opcao.startsWith("2")) {
+            } else if (opcao.startsWith("2")) {
                 if (cpfCnpj.isEmpty()) {
                     sb.append("Por favor, digite o CPF/CNPJ no campo de filtro.");
                 } else {
@@ -99,13 +98,12 @@ public class AbaRelatorios extends VerticalLayout {
                         } else {
                             for (Ticket t : sit.veiculosEstacionados) {
                                 sb.append("  - Placa: ").append(t.getPlaca())
-                                  .append(" | Entrada: ").append(t.getHoraEntrada()).append("\n");
+                                        .append(" | Entrada: ").append(t.getHoraEntrada()).append("\n");
                             }
                         }
                     }
                 }
-            }
-            else if (opcao.startsWith("3")) {
+            } else if (opcao.startsWith("3")) {
                 if (cpfCnpj.isEmpty()) {
                     sb.append("Por favor, digite o CPF/CNPJ no campo de filtro.");
                 } else {
@@ -113,23 +111,21 @@ public class AbaRelatorios extends VerticalLayout {
                     sb.append("Registros de Histórico (").append(tickets.size()).append(" encontrados):\n");
                     for (Ticket t : tickets) {
                         sb.append("Placa: ").append(t.getPlaca())
-                          .append(" | Entrada: ").append(t.getHoraEntrada())
-                          .append(" | Saída: ").append(t.getHoraSaida())
-                          .append(" | Cobrado: R$ ").append(t.getValorCobrado()).append("\n");
+                                .append(" | Entrada: ").append(t.getHoraEntrada())
+                                .append(" | Saída: ").append(t.getHoraSaida())
+                                .append(" | Cobrado: R$ ").append(t.getValorCobrado()).append("\n");
                     }
                 }
-            }
-            else if (opcao.startsWith("4")) {
+            } else if (opcao.startsWith("4")) {
                 List<Ticket> tickets = relatorios.getRegistrosAvulsos(inicio, fim);
                 sb.append("Registros Avulsos (").append(tickets.size()).append(" encontrados):\n");
                 for (Ticket t : tickets) {
                     sb.append("Placa: ").append(t.getPlaca())
-                      .append(" | Entrada: ").append(t.getHoraEntrada())
-                      .append(" | Saída: ").append(t.getHoraSaida())
-                      .append(" | Cobrado: R$ ").append(t.getValorCobrado()).append("\n");
+                            .append(" | Entrada: ").append(t.getHoraEntrada())
+                            .append(" | Saída: ").append(t.getHoraSaida())
+                            .append(" | Cobrado: R$ ").append(t.getValorCobrado()).append("\n");
                 }
-            }
-            else if (opcao.startsWith("5")) {
+            } else if (opcao.startsWith("5")) {
                 Relatorios.ClientesImpedidos impedidos = relatorios.getClientesImpedidos();
                 sb.append("--- Placas Avulsas Bloqueadas (Inadimplentes) ---\n");
                 for (String p : impedidos.placasBloqueadasAvulsas) {
@@ -138,17 +134,16 @@ public class AbaRelatorios extends VerticalLayout {
                 sb.append("\n--- Empresas Inadimplentes ---\n");
                 for (Empresa e : impedidos.empresasInadimplentes) {
                     sb.append("Empresa: ").append(e.getNome()).append(" | CNPJ: ").append(e.getCpf_cnpj())
-                      .append(" | Débitos: R$ ").append(e.getDebitos()).append("\n");
+                            .append(" | Débitos: R$ ").append(e.getDebitos()).append("\n");
                 }
-            }
-            else if (opcao.startsWith("6")) {
+            } else if (opcao.startsWith("6")) {
                 int ano = dataFim.getValue() != null ? dataFim.getValue().getYear() : LocalDate.now().getYear();
                 List<Map.Entry<String, Long>> top10 = relatorios.getTop10ClientesFrequentes(ano);
                 sb.append("Top 10 Clientes Frequentes em ").append(ano).append(":\n\n");
                 int rank = 1;
                 for (Map.Entry<String, Long> entry : top10) {
                     sb.append(rank).append("º lugar: ").append(entry.getKey())
-                      .append(" (").append(entry.getValue()).append(" visitas)\n");
+                            .append(" (").append(entry.getValue()).append(" visitas)\n");
                     rank++;
                 }
             }

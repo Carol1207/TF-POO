@@ -75,8 +75,8 @@ public class PersistenciaClientes {
         Map<String, Cliente> clientes = new HashMap<>();
 
         try (var linhas = Files.lines(Path.of(NOME_ARQUIVO), StandardCharsets.UTF_8)) {
-            linhas.map(String::trim) // Remove brancos no início e fim da linha
-                    .filter(l -> !l.isEmpty()) // Ignora as linhas em branco
+            linhas.map(String::trim)
+                    .filter(l -> !l.isEmpty())
                     .forEach(l -> {
                         String[] partes = l.split(",");
                         String tipo = partes[0];
@@ -90,8 +90,6 @@ public class PersistenciaClientes {
                             case "Empresa" -> new Empresa(cpfCnpj, nome, celular, (int) valorExtra);
                             default -> throw new IllegalArgumentException("Tipo de cliente desconhecido: " + tipo);
                         };
-
-                        // As placas estarão da "partes[5]" em diante
 
                         for (int i = 5; i < partes.length; i++) {
                             cliente.cadastraVeiculo(partes[i]);

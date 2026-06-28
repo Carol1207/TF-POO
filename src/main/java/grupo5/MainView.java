@@ -10,16 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MainView extends VerticalLayout {
 
     public MainView(@Autowired ServicoDeEstacionamento servico) {
-        // Inicializa as 3 abas principais
+
         AbaGuarita abaGuarita = new AbaGuarita(servico);
         AbaCadastro abaCadastro = new AbaCadastro(servico);
         AbaRelatorios abaRelatorios = new AbaRelatorios(servico);
 
-        // Oculta todas por padrão exceto a primeira
         abaCadastro.setVisible(false);
         abaRelatorios.setVisible(false);
 
-        // Cria os botões (Tabs) superiores
         Tab tabGuarita = new Tab("Guarita");
         Tab tabCadastro = new Tab("Cadastro de Clientes");
         Tab tabRelatorios = new Tab("Relatórios");
@@ -27,7 +25,6 @@ public class MainView extends VerticalLayout {
         Tabs tabs = new Tabs(tabGuarita, tabCadastro, tabRelatorios);
         tabs.setWidthFull();
 
-        // Lógica para alternar as abas quando o usuário clica
         tabs.addSelectedChangeListener(event -> {
             abaGuarita.setVisible(false);
             abaCadastro.setVisible(false);
@@ -42,7 +39,6 @@ public class MainView extends VerticalLayout {
             }
         });
 
-        // Adiciona tudo na tela principal
         add(tabs, abaGuarita, abaCadastro, abaRelatorios);
         setSizeFull();
         setPadding(false);
