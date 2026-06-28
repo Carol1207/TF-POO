@@ -1,0 +1,156 @@
+@startuml drg-Estacionamento
+
+package grupo5 {
+    
+    class Estacionamento{
+        MAX_VAGAS: int = 9000
+        VALOR_DIARIA: double = 20.0
+        VALOR HORA: double = 3.0
+        - ticketsAtivos: Map<String, Ticket>
+        - ticketsEncerrados: List<Ticket>
+        - placasBloqueadas: HashSet<String>
+        - cadastroCliente: CadastroCliente
+        + getTicketsAtivos(): HashMap<String, Ticket>
+        + getTicketsEncerrados(): HashMap<Ticket>
+        + getPlacasBloqueadas(): HashMap<String>
+        + entrada(placa: String, horaEntrada: LocalDateTime): void
+        + calculaCustoSaida(placa: String, horaSaida: LocalDateTime): Ticket
+        + saida(ticket: Ticket, valorPago: double): void
+        + verificaPlaca(placa: String): boolean
+        + categoriaCliente(cliente: Cliente): CategoriaCliente
+        + quantidadeDiarias(entrada: LocalDateTime, saida: LocalDateTime): int
+        + horasAteSaidaOuMeiaNoite(entrada: LocalDateTime, saida: LocalDateTime): int
+    }
+
+    enum CategoriaCliente {
+        PROFESSOR
+        ESTUDANTE
+        EMPRESA
+        AVULSO 
+    }
+
+    class Ticket {
+        - placa: String
+        - horaEntrada: LocalDateTime
+        - horaSaida: LocalDateTime
+        - valorCalculado: double
+        - desconto: double
+        - valorCobrado: double
+        - cliente: Cliente
+        + getPlaca(): String
+        + getHoraEntrada(): LocalDateTime
+        + getHoraSaida(): LocalDateTime
+        + getValorCalculado(): double
+        + getValorCobrado(): double
+        + getCliente(): Cliente
+        + getDesconto(): double
+        + setHoraSaida(horaSaida: LocalDateTime): void
+        + setValorCalculado(valorCalculado: double): void
+        + setDesconto(desconto: double): void
+        + setValorCobrado(valorCobrado: double): void
+
+    }
+
+    class CadastroCliente{
+        - clientes: HashMap<String, Cliente>
+        - placasClientes: HashMap<String, Cliente>
+        + getClientes(): HashMap<String, Cliente>
+        + getPlacasClientes(): HashMap<String, Cliente>
+    }
+     
+    abstract Cliente{
+        - CPF_CNPJ: String
+        - nome: String
+        - celular: String
+        - placas_veiculos: HashSet<String>
+        + getCpf_cnpj(): String
+        + getNome(): String
+        + getCelular(): String
+        + getPlacas(): HashSet<String>
+        + cadastraVeiculo(placa: String): void
+        + removeVeiculo(placa: String): void
+        + calculaCusto(ticket: Ticket, horaSaida: LocalDateTime): Ticket
+    }
+
+    class Estudante {
+        MAX_VEICULOS: int = 1
+        VALOR_DIARIA: double = 10.0
+        - saldo: double
+        + getSaldo(): double
+        + adicionaSaldo(saldo: double): void
+
+    }
+
+    class Professor{
+
+    }
+    
+    class Empresa{
+        DIARIA: double = 20.0
+        MULTA: double = 20.0
+        - debitos: int
+        - inadimplente: boolean
+        + getDebitos(): int
+        + adicionaDebito(valor: int): void
+        + isInadimplente(): boolean
+        + setInadimplente(inadimplente: boolean): void
+        + pagarBoleto(): void
+        +
+    }
+
+    class PersistenciaClientes{
+        NOME_ARQUIVO: String = "clientes.dat"
+        + armazenarClientes(clientes: Map<String, Cliente>): void
+        + carregarClientes(): Map<String, Cliente>
+    }
+
+    class PersistenciaTickets{
+        + armazenarTickets(tickets: List<Ticket>, nomeArquivo: String): void
+        + carregarTickets(nomeArquivo: String, clientes: Map<String, Cliente>): List<Ticket>
+    }
+
+    class Relatorios{
+        - estacionamento: Estacionamento
+        - cadastroCliente: CadastroCliente
+        + getValorArrecadado(inicio: LocalDateTime, fim: LocalDateTime, categoria: CategoriaCliente): double
+        + getSituacaoCliente(cpfCnpj: String): SituacaoCliente
+        + getRegistrosClienteCadastrado(cpfCnpj: String, inicio: LocalDateTime, fim: LocalDateTime): List<Ticket>
+        + getRegistrosAvulsos(inicio: LocalDateTime, fim: LocalDateTime): List<Ticket>
+        + getClientesImpedidos(): ClientesImpedidos
+        + getTop10ClientesFrequentes(ano: int): List<Map.Entry<String, Long>>
+    }
+
+    class SituacaoCliente{
+        - cliente: Cliente
+        - veiculosEstacionados: List<Ticket>
+        - saldoOuDebito: double
+    }
+
+    class ClientesImpedidos{
+        - placasBloqueadasAvulsas: List<String>
+        - empresasInadimplentes: List<Empresa>
+    }
+
+    Cliente <|-- Estudante
+    Cliente <|-- Professor
+    Cliente <|-- Empresa
+
+    Estacionamento "1" *-- "1" CadastroCliente : possui
+    Relatorios "1" *-- "1" SituacaoCliente : gera/possui
+    Relatorios "1" *-- "1" ClientesImpedidos : gera/possui
+
+    Estacionamento "1" o-- "0..*" Ticket : ticketsAtivos / ticketsEncerrados
+    CadastroCliente "1" o-- "0..*" Cliente : clientes / placasClientes
+    Ticket "0..*" --> "0..1" Cliente : pertence a
+
+    Relatorios --> Estacionamento : consulta
+    Relatorios --> CadastroCliente : consulta
+    SituacaoCliente --> Cliente : descreve
+    SituacaoCliente o-- "0..*" Ticket : veiculosEstacionados
+    ClientesImpedidos o-- "0..*" Empresa : lista
+
+    PersistenciaClientes ..> Cliente : manipula/salva
+    PersistenciaTickets ..> Ticket : manipula/salva
+    Estacionamento ..> CategoriaCliente : utiliza
+
+}
