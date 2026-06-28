@@ -31,6 +31,10 @@ public class Estacionamento {
         return ticketsEncerrados;
     }
 
+    public void setTicketsEncerrados(List<Ticket> tickets) {
+        this.ticketsEncerrados = new ArrayList<>(tickets);
+    }
+
     public HashSet<String> getPlacasBloqueadas() {
         return placasBloqueadas;
     }

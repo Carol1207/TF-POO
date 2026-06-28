@@ -29,23 +29,22 @@ import com.nimbusds.jose.util.StandardCharset;
 
 public class PersistenciaTickets {
 
-    public void armazenarTickets(List<Ticket> tickets, String nomeArquivo) {
-        try (BufferedWriter writer = 
-            Files.newBufferedWriter(Path.of(nomeArquivo), StandardCharsets.UTF_8)) {
-            for (Ticket ticket: tickets) {
+    public static void armazenarTickets(List<Ticket> tickets, String nomeArquivo) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(nomeArquivo), StandardCharsets.UTF_8)) {
+            for (Ticket ticket : tickets) {
                 String cpfCnpj = (ticket.getCliente() != null) ? ticket.getCliente().getCpf_cnpj() : "0";
                 String horaSaida = (ticket.getHoraSaida() != null) ? ticket.getHoraSaida().toString() : "null";
-                String linha = ticket.getPlaca() + "," + 
-                    ticket.getHoraEntrada().toString() + "," + 
-                    horaSaida + "," +
-                    cpfCnpj + "," +
-                    ticket.getValorCalculado() + "," +
-                    ticket.getDesconto() + "," +
-                    ticket.getValorCobrado();
+                String linha = ticket.getPlaca() + "," +
+                        ticket.getHoraEntrada().toString() + "," +
+                        horaSaida + "," +
+                        cpfCnpj + "," +
+                        ticket.getValorCalculado() + "," +
+                        ticket.getDesconto() + "," +
+                        ticket.getValorCobrado();
                 writer.write(linha);
                 writer.newLine();
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Erro ao armazenar tickets: " + e.getMessage(), e);
         }
     }
@@ -53,38 +52,36 @@ public class PersistenciaTickets {
     public static List<Ticket> carregarTickets(String nomeArquivo, Map<String, Cliente> clientes) {
         List<Ticket> tickets = new ArrayList<>();
 
-        try(var linhas = Files.lines(Path.of(nomeArquivo), StandardCharset.UTF_8)) {
-            linhas.map(String::trim)        // Remove brancos no início e fim da linha
-                .filter(l -> !l.isEmpty())  // Ignora as linhas em branco
-                .forEach(l -> {
-                    String[] partes         =   l.split(",");
-                    String placa            =   partes[0];
-                    LocalDateTime entrada   =   LocalDateTime.parse(partes[1]);
-                    LocalDateTime saida     =   partes[2].equals("null") ? null : LocalDateTime.parse(partes[2]);
-                    String cpfCnpj          =   partes[3];
-                    double valorCalculado   =   Double.parseDouble(partes[4]);
-                    double desconto         =   Double.parseDouble(partes[5]);
-                    double valorCobrado     =   Double.parseDouble(partes[6]);
-                    
-                    Cliente cliente = cpfCnpj.equals("0") ? null : clientes.get(cpfCnpj);
+        try (var linhas = Files.lines(Path.of(nomeArquivo), StandardCharset.UTF_8)) {
+            linhas.map(String::trim) // Remove brancos no início e fim da linha
+                    .filter(l -> !l.isEmpty()) // Ignora as linhas em branco
+                    .forEach(l -> {
+                        String[] partes = l.split(",");
+                        String placa = partes[0];
+                        LocalDateTime entrada = LocalDateTime.parse(partes[1]);
+                        LocalDateTime saida = partes[2].equals("null") ? null : LocalDateTime.parse(partes[2]);
+                        String cpfCnpj = partes[3];
+                        double valorCalculado = Double.parseDouble(partes[4]);
+                        double desconto = Double.parseDouble(partes[5]);
+                        double valorCobrado = Double.parseDouble(partes[6]);
 
-                    Ticket ticket = new Ticket(placa, entrada, cliente);
+                        Cliente cliente = cpfCnpj.equals("0") ? null : clientes.get(cpfCnpj);
 
-                    if (saida == null) {
-                        ticket.setHoraSaida(saida);
-                        ticket.setValorCalculado(valorCalculado);
-                        ticket.setDesconto(desconto);
-                        ticket.setValorCobrado(valorCobrado);
-                    }
+                        Ticket ticket = new Ticket(placa, entrada, cliente);
 
-                    tickets.add(ticket);
-                });
-        } catch(IOException e) {
+                        if (saida == null) {
+                            ticket.setHoraSaida(saida);
+                            ticket.setValorCalculado(valorCalculado);
+                            ticket.setDesconto(desconto);
+                            ticket.setValorCobrado(valorCobrado);
+                        }
+
+                        tickets.add(ticket);
+                    });
+        } catch (IOException e) {
             throw new RuntimeException("Erro ao carregar tickets: " + e.getMessage(), e);
         }
         return tickets;
     }
-    
+
 }
-
-
