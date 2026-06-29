@@ -8,6 +8,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 
@@ -68,7 +69,31 @@ public class AbaCadastro extends VerticalLayout {
         btnSalvar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         btnSalvar.addClickListener(e -> salvarCliente());
 
-        add(titulo, formLayout, btnSalvar);
+        H2 tituloRemover = new H2("Remover Veículo");
+        TextField campoPlacaRemover = new TextField("Placa para remover");
+        Button btnRemover = new Button("Remover");
+        btnRemover.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        btnRemover.addClickListener(e -> {
+            String placa = campoPlacaRemover.getValue().trim().toUpperCase();
+            if (placa.isEmpty()) {
+                mostrarErro("Digite uma placa para remover.");
+                return;
+            }
+            try {
+                servico.getCadastroCliente().removerPlaca(placa);
+                PersistenciaClientes.armazenarClientes(servico.getCadastroCliente().getClientes());
+                mostrarSucesso("Placa " + placa + " desvinculada com sucesso!");
+                campoPlacaRemover.clear();
+            } catch (Exception ex) {
+                mostrarErro(ex.getMessage());
+            }
+        });
+
+        HorizontalLayout layoutRemover = new HorizontalLayout(campoPlacaRemover, btnRemover);
+        layoutRemover.setAlignItems(Alignment.BASELINE);
+
+        add(titulo, formLayout, btnSalvar, tituloRemover, layoutRemover);
     }
 
     private void salvarCliente() {
@@ -108,7 +133,7 @@ public class AbaCadastro extends VerticalLayout {
                     throw new IllegalArgumentException("Tipo inválido.");
             }
 
-            // Adiciona as placas
+            // adiciona as placas
             if (!placasText.isEmpty()) {
                 String[] arrayPlacas = placasText.split(",");
                 for (String p : arrayPlacas) {
@@ -116,11 +141,14 @@ public class AbaCadastro extends VerticalLayout {
                 }
             }
 
-            // Insere na memória
+            // insere na memória
             cadastro.getClientes().put(cpfCnpj, novoCliente);
             for (String placa : novoCliente.getPlacas()) {
                 cadastro.getPlacasClientes().put(placa, novoCliente);
             }
+
+            // salva no arquivo em tempo real
+            PersistenciaClientes.armazenarClientes(cadastro.getClientes());
 
             mostrarSucesso("Cliente " + nome + " cadastrado com sucesso!");
             limparFormulario();

@@ -30,4 +30,13 @@ public class CadastroCliente {
         }
     }
 
+    public void removerPlaca(String placa) {
+        if (placasClientes.containsKey(placa)) {
+            Cliente cliente = placasClientes.get(placa);
+            cliente.removeVeiculo(placa);
+            placasClientes.remove(placa);
+        } else {
+            throw new IllegalArgumentException("Placa não encontrada ou não pertence a um cliente cadastrado.");
+        }
+    }
 }

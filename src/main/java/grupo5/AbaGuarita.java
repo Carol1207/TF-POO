@@ -69,13 +69,9 @@ public class AbaGuarita extends VerticalLayout {
 
         try {
             Estacionamento est = servico.getEstacionamento();
-            // Calcula o custo
             Ticket ticket = est.calculaCustoSaida(placa, LocalDateTime.now());
-            
-            // Registra a saída definitivamente (assumindo que pagou tudo)
             est.saida(ticket, ticket.getValorCobrado());
-            
-            String msg = String.format("Saída registrada! Placa: %s | Valor Cobrado: R$ %.2f", 
+            String msg = String.format("Saída registrada! Placa: %s | Valor Cobrado: R$ %.2f",
                     placa, ticket.getValorCobrado());
             mostrarSucesso(msg);
             campoPlaca.clear();

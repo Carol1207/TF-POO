@@ -35,25 +35,19 @@ public class PersistenciaClientes {
                     linha.append(estudante.getNome()).append(", ");
                     linha.append(estudante.getCelular()).append(", ");
                     linha.append(estudante.getSaldo());
-                }
-
-                if (cliente instanceof Professor professor) {
+                } else if (cliente instanceof Professor professor) {
                     linha.append("Professor, ");
                     linha.append(professor.getCpf_cnpj()).append(", ");
                     linha.append(professor.getNome()).append(", ");
                     linha.append(professor.getCelular());
                     linha.append(0);
-                }
-
-                if (cliente instanceof Empresa empresa) {
+                } else if (cliente instanceof Empresa empresa) {
                     linha.append("Empresa, ");
                     linha.append(empresa.getCpf_cnpj()).append(", ");
                     linha.append(empresa.getNome()).append(", ");
                     linha.append(empresa.getCelular());
                     linha.append(empresa.getDebitos());
-                }
-
-                else {
+                } else {
                     throw new IllegalArgumentException(
                             "Tipo de cliente desconhecido: " + cliente.getClass().getSimpleName());
                 }
@@ -79,20 +73,20 @@ public class PersistenciaClientes {
                     .filter(l -> !l.isEmpty())
                     .forEach(l -> {
                         String[] partes = l.split(",");
-                        String tipo = partes[0];
-                        String cpfCnpj = partes[1];
-                        String nome = partes[2];
-                        String celular = partes[3];
-                        double valorExtra = Double.parseDouble(partes[4]);
-                        Cliente cliente = switch (tipo) {
-                            case "Estudante" -> new Estudante(cpfCnpj, nome, celular, (int) valorExtra);
-                            case "Professor" -> new Professor(cpfCnpj, nome, celular);
-                            case "Empresa" -> new Empresa(cpfCnpj, nome, celular, (int) valorExtra);
+                        String tipo = partes[0].trim();
+                        String cpfCnpj = partes[1].trim();
+                        String nome = partes[2].trim();
+                        String celular = partes[3].trim();
+                        double valorExtra = Double.parseDouble(partes[4].trim());
+                        Cliente cliente = switch (tipo.toLowerCase()) {
+                            case "estudante" -> new Estudante(cpfCnpj, nome, celular, (int) valorExtra);
+                            case "professor" -> new Professor(cpfCnpj, nome, celular);
+                            case "empresa" -> new Empresa(cpfCnpj, nome, celular, (int) valorExtra);
                             default -> throw new IllegalArgumentException("Tipo de cliente desconhecido: " + tipo);
                         };
 
                         for (int i = 5; i < partes.length; i++) {
-                            cliente.cadastraVeiculo(partes[i]);
+                            cliente.cadastraVeiculo(partes[i].trim().toUpperCase());
                         }
                         clientes.put(cpfCnpj, cliente);
                     });
