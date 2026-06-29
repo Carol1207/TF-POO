@@ -20,6 +20,7 @@ public class ServicoDeEstacionamento {
         this.relatorios = new Relatorios(this.estacionamento, this.cadastroCliente);
     }
 
+    // carrega os dados quando o sistema inicia
     @PostConstruct
     public void init() {
         try {
@@ -38,6 +39,7 @@ public class ServicoDeEstacionamento {
         }
     }
 
+    // salva os dados por segurança quando o sistema é encerrado (backup)
     @PreDestroy
     public void destroy() {
         try {

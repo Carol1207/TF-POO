@@ -74,6 +74,7 @@ public class AbaCadastro extends VerticalLayout {
         Button btnRemover = new Button("Remover");
         btnRemover.addThemeVariants(ButtonVariant.LUMO_ERROR);
 
+        // ação ao clicar no botão de remover placa
         btnRemover.addClickListener(e -> {
             String placa = campoPlacaRemover.getValue().trim().toUpperCase();
             if (placa.isEmpty()) {
@@ -112,6 +113,7 @@ public class AbaCadastro extends VerticalLayout {
                 return;
             }
 
+            // dois clientes não podem ter o mesmo documento (ignorando formatação)
             CadastroCliente cadastro = servico.getCadastroCliente();
             String cpfCnpjLimpo = cpfCnpj.replaceAll("[^0-9]", "");
             boolean cpfJaCadastrado = cadastro.getClientes().keySet().stream()

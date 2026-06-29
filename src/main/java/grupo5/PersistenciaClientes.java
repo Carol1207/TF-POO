@@ -24,6 +24,7 @@ import java.util.Map;
 public class PersistenciaClientes {
     private static final String NOME_ARQUIVO = "clientes.dat";
 
+    // grava os clientes e seus dados no arquivo .dat
     public static void armazenarClientes(Map<String, Cliente> clientes) {
         try (BufferedWriter writer = Files.newBufferedWriter(Path.of(NOME_ARQUIVO), StandardCharsets.UTF_8)) {
             for (Cliente cliente : clientes.values()) {
@@ -64,6 +65,7 @@ public class PersistenciaClientes {
         }
     }
 
+    // carrega os clientes lendo o arquivo linha a linha
     public static Map<String, Cliente> carregarClientes() {
         Map<String, Cliente> clientes = new HashMap<>();
 

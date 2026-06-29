@@ -3,6 +3,7 @@ package grupo5;
 import java.util.HashMap;
 import java.util.Map;
 
+// gerencia a memória dos clientes cadastrados e a busca por placa
 public class CadastroCliente {
     private HashMap<String, Cliente> clientes;
     private HashMap<String, Cliente> placasClientes;
@@ -20,6 +21,7 @@ public class CadastroCliente {
         return placasClientes;
     }
 
+    // preenche os mapas a partir dos dados lidos
     public void setClientes(Map<String, Cliente> clientesCarregados) {
         this.clientes = new HashMap<>(clientesCarregados);
         this.placasClientes.clear();
