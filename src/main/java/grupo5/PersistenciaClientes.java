@@ -12,13 +12,12 @@ import java.util.Map;
     * Formato do arquivo CSV "clientes.dat":
     * tipo, cpf_cnpj, nome, celular, valorExtra, placa1, placa2, ...
     * 
-    * onde:
-    *   tipo        :   Estudante | Professor | Empresa
-    *   cpf_cnpj    :   CPF (Estudante/Professor) ou CNPJ (Empresa)
+    *   tipo        :   estudante | professor | empresa
+    *   cpf_cnpj    :   CPF (estudante/professor) ou CNPJ (empresa)
     *   nome        :   nome completo ou razão social
     *   celular     :   número de telefone
-    *   valorExtra  :   créditos (Estudante), débitos (Empresa) ou 0 (Professor)
-    *   placas      :   zero ou mais placas de veículos associados    
+    *   valorExtra  :   créditos (estudante) ou débitos (empresa)
+    *   placas      :   zero ou mais placas de veículos associados
 
 */
 
@@ -39,13 +38,13 @@ public class PersistenciaClientes {
                     linha.append("Professor, ");
                     linha.append(professor.getCpf_cnpj()).append(", ");
                     linha.append(professor.getNome()).append(", ");
-                    linha.append(professor.getCelular());
+                    linha.append(professor.getCelular()).append(", ");
                     linha.append(0);
                 } else if (cliente instanceof Empresa empresa) {
                     linha.append("Empresa, ");
                     linha.append(empresa.getCpf_cnpj()).append(", ");
                     linha.append(empresa.getNome()).append(", ");
-                    linha.append(empresa.getCelular());
+                    linha.append(empresa.getCelular()).append(", ");
                     linha.append(empresa.getDebitos());
                 } else {
                     throw new IllegalArgumentException(

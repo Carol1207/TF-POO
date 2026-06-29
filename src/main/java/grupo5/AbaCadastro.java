@@ -113,7 +113,11 @@ public class AbaCadastro extends VerticalLayout {
             }
 
             CadastroCliente cadastro = servico.getCadastroCliente();
-            if (cadastro.getClientes().containsKey(cpfCnpj)) {
+            String cpfCnpjLimpo = cpfCnpj.replaceAll("[^0-9]", "");
+            boolean cpfJaCadastrado = cadastro.getClientes().keySet().stream()
+                    .anyMatch(k -> k.replaceAll("[^0-9]", "").equals(cpfCnpjLimpo));
+
+            if (cpfJaCadastrado) {
                 mostrarErro("Já existe um cliente cadastrado com este CPF/CNPJ.");
                 return;
             }
